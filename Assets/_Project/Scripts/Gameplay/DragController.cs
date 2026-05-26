@@ -87,7 +87,7 @@ public class DragController : MonoBehaviour
             if (chainHandle != null && dragIndicatorUI.activeSelf)
             {
                 // Simple follow logic, assuming UI is world space canvas or an object with sprite
-                dragIndicatorUI.transform.position = chainHandle.position + Vector3.up * 1f;
+                dragIndicatorUI.transform.position = chainHandle.position;
             }
         }
     }
