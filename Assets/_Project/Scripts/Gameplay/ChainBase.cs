@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Rigidbody))]
 public class ChainBase : MonoBehaviour
@@ -11,13 +12,69 @@ public class ChainBase : MonoBehaviour
 
     private Rigidbody rb;
 
+    private struct ChainLinkInfo
+    {
+        public Transform linkTransform;
+        public Vector3 initialScale;
+    }
+    private List<ChainLinkInfo> chainLinks = new List<ChainLinkInfo>();
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
+        InitializeChainLinks();
+    }
+
+    private void InitializeChainLinks()
+    {
+        Rigidbody currentRb = rb;
+        
+        while (currentRb != null)
+        {
+            // SpikeBallは自身のスケール管理を持っているので除外して終了
+            if (currentRb.GetComponent<SpikeBall>() != null)
+            {
+                break;
+            }
+
+            chainLinks.Add(new ChainLinkInfo 
+            { 
+                linkTransform = currentRb.transform, 
+                initialScale = currentRb.transform.localScale 
+            });
+
+            Joint joint = currentRb.GetComponent<Joint>();
+            if (joint != null && joint.connectedBody != null)
+            {
+                // 無限ループ防止
+                if (chainLinks.Exists(x => x.linkTransform == joint.connectedBody.transform))
+                {
+                    break;
+                }
+                currentRb = joint.connectedBody;
+            }
+            else
+            {
+                break;
+            }
+        }
     }
 
     private void FixedUpdate()
     {
+        // 鎖の各リンクのスケールをSpikeBallに合わせて更新
+        if (SpikeBall.Instance != null && chainLinks.Count > 0)
+        {
+            float sizeLevel = SpikeBall.Instance.GetScaledValue(1f);
+            foreach (var link in chainLinks)
+            {
+                if (link.linkTransform != null)
+                {
+                    link.linkTransform.localScale = link.initialScale * sizeLevel;
+                }
+            }
+        }
+
         if (targetHandle == null) return;
 
         // Y座標をtargetHandleと同じ高さに固定
