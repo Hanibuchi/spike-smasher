@@ -10,6 +10,10 @@ public class DragController : MonoBehaviour
     // UI that prompts user to drag
     public GameObject dragIndicatorUI;
     
+    [Header("Base Limits")]
+    public Transform chainBaseTransform;
+    public float maxDistanceFromBase = 5.0f;
+    
     private Camera mainCamera;
     private Plane dragPlane;
     private bool isDragging = false;
@@ -73,6 +77,21 @@ public class DragController : MonoBehaviour
         if (dragPlane.Raycast(ray, out float distance))
         {
             Vector3 targetPosition = ray.GetPoint(distance);
+            
+            // Limit distance from ChainBase
+            if (chainBaseTransform != null)
+            {
+                Vector3 basePos = chainBaseTransform.position;
+                Vector3 offset = targetPosition - basePos;
+                offset.y = 0; // 平面(XZ)上の距離で制限
+                
+                if (offset.magnitude > maxDistanceFromBase)
+                {
+                    targetPosition = basePos + offset.normalized * maxDistanceFromBase;
+                    targetPosition.y = handleYPosition; // 高さを元に戻す
+                }
+            }
+
             // Move using MovePosition to respect physics
             handleRb.MovePosition(targetPosition);
         }
