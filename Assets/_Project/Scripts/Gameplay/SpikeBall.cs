@@ -9,9 +9,12 @@ public class SpikeBall : MonoBehaviour
     
     private Rigidbody rb;
     [SerializeField] float currentSizeLevel = 1.0f;
+    public float CurrentSizeLevel => currentSizeLevel;
     [SerializeField] private Transform targetTransform;
     private Vector3 initialScale;
     private float initialMass;
+
+    public event System.Action<float> OnSizeLevelChanged;
 
     private void Awake()
     {
@@ -59,6 +62,8 @@ public class SpikeBall : MonoBehaviour
         {
             rb.mass = initialMass * currentSizeLevel;
         }
+        
+        OnSizeLevelChanged?.Invoke(currentSizeLevel);
     }
 
     private void OnTriggerEnter(Collider other)

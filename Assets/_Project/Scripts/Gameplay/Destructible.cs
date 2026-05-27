@@ -15,6 +15,39 @@ public class Destructible : MonoBehaviour
     public GameObject destructionEffectPrefab;
     public GameObject floatingTextPrefab;
 
+    private void Start()
+    {
+        // 自身のスケールからrequiredSizeLevelを設定 (ここではXスケールを使用)
+        requiredSizeLevel = transform.localScale.x;
+
+        if (SpikeBall.Instance != null)
+        {
+            SpikeBall.Instance.OnSizeLevelChanged += CheckCollision;
+            // 初期状態のチェック
+            CheckCollision(SpikeBall.Instance.CurrentSizeLevel);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (SpikeBall.Instance != null)
+        {
+            SpikeBall.Instance.OnSizeLevelChanged -= CheckCollision;
+        }
+    }
+
+    private void CheckCollision(float spikeBallSizeLevel)
+    {
+        if (spikeBallSizeLevel >= requiredSizeLevel)
+        {
+            SetCollisionEnabled(true);
+        }
+        else
+        {
+            SetCollisionEnabled(false);
+        }
+    }
+
     public void SetCollisionEnabled(bool canCollide)
     {
         if (collisionObject != null)
