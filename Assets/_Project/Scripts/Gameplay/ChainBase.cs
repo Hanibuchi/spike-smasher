@@ -34,17 +34,19 @@ public class ChainBase : MonoBehaviour
             // スケールに応じた変動スピードを取得
             float currentSpeed = SpikeBall.Instance != null ? SpikeBall.Instance.GetScaledValue(moveSpeed) : moveSpeed;
 
-            // 一定の速度で移動する量を計算
-            Vector3 step = direction * currentSpeed * Time.fixedDeltaTime;
-
-            // ターゲットを通り越してしまう場合は、移動量を調整
-            if (step.magnitude > distance)
+            // 1フレームの移動距離で通り過ぎてしまう場合は速度を調整
+            if (currentSpeed * Time.fixedDeltaTime > distance)
             {
-                step = direction * distance;
+                currentSpeed = distance / Time.fixedDeltaTime;
             }
 
-            // RigidbodyのMovePositionを使って一定速度で移動
-            rb.MovePosition(rb.position + step);
+            // RigidbodyのlinearVelocityを使って移動
+            rb.linearVelocity = direction * currentSpeed;
+        }
+        else
+        {
+            // 目標位置に到達したら停止
+            rb.linearVelocity = Vector3.zero;
         }
     }
 }
