@@ -3,7 +3,18 @@ using UnityEngine;
 public class Destructible : MonoBehaviour
 {
     public float requiredSizeLevel = 1.0f;
-    public int scoreValue = 100;
+    public int scoreValue = 10;
+
+    [Header("Visual & Scaling Settings")]
+    public Renderer targetRenderer;
+    [Tooltip("このカラープロパティの彩度(S)・明度(V)・透明度(A)が使用されます。色相(H)はスケールに応じて自動で変化します。")]
+    public Color baseColor = new Color(0.9f, 0.18f, 0.18f); // 初期値をS=0.8, V=0.9付近に設定
+    [Tooltip("色相変化やスコアの基準となる最小スケール")]
+    public float minScale = 1.0f;
+    [Tooltip("色相変化やスコアの基準となる最大スケール")]
+    public float maxScale = 5.0f;
+    [Tooltip("スケール1.0の時の基本スコア")]
+    public int baseScore = 10;
     
     [Header("Collision Settings")]
     public GameObject collisionObject;
@@ -17,13 +28,51 @@ public class Destructible : MonoBehaviour
 
     private void Start()
     {
-        // 自身のスケールからrequiredSizeLevelを設定 (ここではXスケールを使用)
-        requiredSizeLevel = transform.localScale.x;
-
         if (SpikeBall.Instance != null)
         {
             SpikeBall.Instance.OnSizeLevelChanged += CheckCollision;
-            // 初期状態のチェック
+        }
+
+        // オブジェクトが初めからシーンに配置されている場合の初期化
+        Initialize(transform.localScale.x);
+    }
+
+    public void Initialize(float scale)
+    {
+        // スケールと要求サイズの更新
+        transform.localScale = new Vector3(scale, scale, scale);
+        requiredSizeLevel = scale;
+
+        // Scaleに基づくスコアの変更
+        scoreValue = Mathf.RoundToInt(baseScore * scale);
+
+        // Rendererの色相の変更
+        if (targetRenderer == null)
+        {
+            targetRenderer = GetComponentInChildren<Renderer>();
+        }
+
+        if (targetRenderer != null)
+        {
+            // スケールをminScale～maxScaleの範囲で0.0～1.0に正規化
+            float t = Mathf.InverseLerp(minScale, maxScale, scale);
+            
+            // 色相 (0.66が寒色の青、0.0が暖色の赤)
+            float hue = Mathf.Lerp(0.66f, 0.0f, t);
+            
+            // baseColorから彩度と明度を抽出
+            Color.RGBToHSV(baseColor, out float _, out float s, out float v);
+            
+            // 抽出した彩度・明度、および元のアルファ値を使用して新しい色を作成
+            Color finalColor = Color.HSVToRGB(hue, s, v);
+            finalColor.a = baseColor.a;
+
+            targetRenderer.material.color = finalColor;
+        }
+
+        // 生成時のサイズの当たり判定チェック
+        if (SpikeBall.Instance != null)
+        {
             CheckCollision(SpikeBall.Instance.CurrentSizeLevel);
         }
     }

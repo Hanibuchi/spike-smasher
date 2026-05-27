@@ -28,8 +28,8 @@ Transform:
   m_GameObject: {fileID: 2722055913174455977}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.5, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
+  m_LocalScale: {x: 1.5, y: 2, z: 1.5}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 2052861469925754417}
@@ -158,7 +158,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Destructible
   requiredSizeLevel: 1
-  scoreValue: 100
+  scoreValue: 10
+  targetRenderer: {fileID: 1593351796517692792}
+  baseColor: {r: 0.9019608, g: 0.6313726, b: 0.6313726, a: 1}
+  minScale: 1
+  maxScale: 5
+  baseScore: 10
   collisionObject: {fileID: 2722055913174455977}
   collideLayer:
     serializedVersion: 2
