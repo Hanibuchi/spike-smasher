@@ -203,7 +203,7 @@ ConfigurableJoint:
     useAcceleration: 0
   m_YDrive:
     serializedVersion: 4
-    positionSpring: 100
+    positionSpring: 200
     positionDamper: 0
     maximumForce: 3.4028233e+38
     useAcceleration: 0

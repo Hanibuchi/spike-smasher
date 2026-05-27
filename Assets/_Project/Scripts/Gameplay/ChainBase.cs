@@ -10,21 +10,23 @@ public class ChainBase : MonoBehaviour
     public float moveSpeed = 10f;
 
     private Rigidbody rb;
-    private float constantY;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        constantY = transform.position.y; // 高さを一定にする場合は使用
     }
 
     private void FixedUpdate()
     {
         if (targetHandle == null) return;
 
+        // Y座標をtargetHandleと同じ高さに固定
+        Vector3 pos = transform.position;
+        pos.y = targetHandle.position.y;
+        transform.position = pos;
+
         // ターゲットに向かう方向を計算（高さは無視）
         Vector3 targetPos = targetHandle.position;
-        targetPos.y = transform.position.y;
         
         float distance = Vector3.Distance(transform.position, targetPos);
         if (distance > 0.01f) // 一定距離近づいたら移動を止めてピクつきを防止
