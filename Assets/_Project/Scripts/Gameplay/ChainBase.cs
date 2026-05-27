@@ -31,8 +31,11 @@ public class ChainBase : MonoBehaviour
         {
             Vector3 direction = (targetPos - transform.position).normalized;
 
+            // スケールに応じた変動スピードを取得
+            float currentSpeed = SpikeBall.Instance != null ? SpikeBall.Instance.GetScaledValue(moveSpeed) : moveSpeed;
+
             // 一定の速度で移動する量を計算
-            Vector3 step = direction * moveSpeed * Time.fixedDeltaTime;
+            Vector3 step = direction * currentSpeed * Time.fixedDeltaTime;
 
             // ターゲットを通り越してしまう場合は、移動量を調整
             if (step.magnitude > distance)

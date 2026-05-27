@@ -111,13 +111,15 @@ public class DragController : MonoBehaviour
             // Limit distance from ChainBase
             if (chainBaseTransform != null)
             {
+                float currentMaxDist = SpikeBall.Instance != null ? SpikeBall.Instance.GetScaledValue(maxDistanceFromBase) : maxDistanceFromBase;
+
                 Vector3 basePos = chainBaseTransform.position;
                 Vector3 offset = targetPosition - basePos;
                 offset.y = 0; // 平面(XZ)上の距離で制限
                 
-                if (offset.magnitude > maxDistanceFromBase)
+                if (offset.magnitude > currentMaxDist)
                 {
-                    targetPosition = basePos + offset.normalized * maxDistanceFromBase;
+                    targetPosition = basePos + offset.normalized * currentMaxDist;
                     targetPosition.y = handleYPosition; // 高さを元に戻す
                 }
             }
@@ -152,10 +154,12 @@ public class DragController : MonoBehaviour
             Vector3 center = chainBaseTransform.position;
             center.y = handleYPosition; // ドラッグ操作平面の高さに合わせる
             
+            float currentMaxDist = SpikeBall.Instance != null ? SpikeBall.Instance.GetScaledValue(maxDistanceFromBase) : maxDistanceFromBase;
+
             for (int i = 0; i < rangeIndicatorSegments; i++)
             {
-                float x = Mathf.Sin(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
-                float z = Mathf.Cos(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
+                float x = Mathf.Sin(Mathf.Deg2Rad * angle) * currentMaxDist;
+                float z = Mathf.Cos(Mathf.Deg2Rad * angle) * currentMaxDist;
                 
                 Vector3 pos = center + new Vector3(x, 0, z);
                 rangeIndicatorLine.SetPosition(i, pos);
@@ -178,14 +182,16 @@ public class DragController : MonoBehaviour
             Vector3 center = chainBaseTransform.position;
             center.y = handleYPosition;
             
+            float currentMaxDist = (Application.isPlaying && SpikeBall.Instance != null) ? SpikeBall.Instance.GetScaledValue(maxDistanceFromBase) : maxDistanceFromBase;
+
             int segments = 36;
             float angle = 0f;
-            Vector3 lastPos = center + new Vector3(0, 0, maxDistanceFromBase);
+            Vector3 lastPos = center + new Vector3(0, 0, currentMaxDist);
             for (int i = 1; i <= segments; i++)
             {
                 angle += 360f / segments;
-                float x = Mathf.Sin(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
-                float z = Mathf.Cos(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
+                float x = Mathf.Sin(Mathf.Deg2Rad * angle) * currentMaxDist;
+                float z = Mathf.Cos(Mathf.Deg2Rad * angle) * currentMaxDist;
                 Vector3 newPos = center + new Vector3(x, 0, z);
                 Gizmos.DrawLine(lastPos, newPos);
                 lastPos = newPos;

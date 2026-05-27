@@ -2,13 +2,25 @@ using UnityEngine;
 
 public class SpikeBall : MonoBehaviour
 {
+    public static SpikeBall Instance { get; private set; }
+
     public float minVelocityToDestroy = 1.0f;
     public float sizeGrowthFactor = 0.001f;
     
     private Rigidbody rb;
-    private float currentSizeLevel = 1.0f;
+    [SerializeField] float currentSizeLevel = 1.0f;
     private Vector3 initialScale;
     private float initialMass;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
     private void Start()
     {
@@ -56,5 +68,13 @@ public class SpikeBall : MonoBehaviour
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// SpikeBallの現在のスケールレベルに応じて値を線形に変化させて返す専用メソッド
+    /// </summary>
+    public float GetScaledValue(float baseValue)
+    {
+        return baseValue * currentSizeLevel;
     }
 }
