@@ -123,7 +123,30 @@ public class Destructible : MonoBehaviour
 
         if (destructionEffectPrefab != null)
         {
-            Instantiate(destructionEffectPrefab, transform.position, Quaternion.identity);
+            GameObject effect = Instantiate(destructionEffectPrefab, transform.position, Quaternion.identity);
+            ParticleSystem[] particleSystems = effect.GetComponentsInChildren<ParticleSystem>();
+            
+            float maxDuration = 2f;
+
+            foreach (var ps in particleSystems)
+            {
+                var main = ps.main;
+
+                if (targetRenderer != null && targetRenderer.material != null)
+                {
+                    main.startColor = targetRenderer.material.color;
+                }
+
+                main.startSizeMultiplier *= transform.localScale.x;
+
+                float lifeTime = main.duration + main.startLifetime.constantMax;
+                if (lifeTime > maxDuration && lifeTime < 100f)
+                {
+                    maxDuration = lifeTime;
+                }
+            }
+
+            Destroy(effect, maxDuration);
         }
 
         if (floatingTextPrefab != null)
