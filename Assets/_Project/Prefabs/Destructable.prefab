@@ -176,5 +176,4 @@ MonoBehaviour:
   scoreBallPrefab: {fileID: 9168943759506211863, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
   scoreBallFlyForceMin: 5
   scoreBallFlyForceMax: 12
-  scoreBallSaturation: 0.8
-  scoreBallValue: 0.9
+  scoreBallBaseColor: {r: 1, g: 0.7, b: 0.7, a: 1}
