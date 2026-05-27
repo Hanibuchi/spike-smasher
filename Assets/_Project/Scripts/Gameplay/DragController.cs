@@ -14,6 +14,13 @@ public class DragController : MonoBehaviour
     public Transform chainBaseTransform;
     public float maxDistanceFromBase = 5.0f;
     
+    [Header("Visuals - Range Indicator")]
+    public bool showRangeIndicatorLine = true;
+    public LineRenderer rangeIndicatorLine;
+    public int rangeIndicatorSegments = 50;
+    public Color rangeIndicatorColor = new Color(1f, 1f, 1f, 0.3f);
+    public float rangeIndicatorWidth = 0.1f;
+    
     private Camera mainCamera;
     private Plane dragPlane;
     private bool isDragging = false;
@@ -27,6 +34,29 @@ public class DragController : MonoBehaviour
         if (chainHandle != null)
         {
             handleRb = chainHandle.GetComponent<Rigidbody>();
+        }
+        
+        SetupRangeIndicator();
+    }
+
+    private void SetupRangeIndicator()
+    {
+        if (showRangeIndicatorLine && rangeIndicatorLine == null)
+        {
+            GameObject lineObj = new GameObject("DragRangeIndicator");
+            lineObj.transform.SetParent(transform);
+            rangeIndicatorLine = lineObj.AddComponent<LineRenderer>();
+            
+            rangeIndicatorLine.startWidth = rangeIndicatorWidth;
+            rangeIndicatorLine.endWidth = rangeIndicatorWidth;
+            rangeIndicatorLine.useWorldSpace = true;
+            rangeIndicatorLine.loop = true;
+            
+            // Materialと色を設定
+            Material lineMat = new Material(Shader.Find("Sprites/Default"));
+            rangeIndicatorLine.material = lineMat;
+            rangeIndicatorLine.startColor = rangeIndicatorColor;
+            rangeIndicatorLine.endColor = rangeIndicatorColor;
         }
     }
 
@@ -107,6 +137,58 @@ public class DragController : MonoBehaviour
             {
                 // Simple follow logic, assuming UI is world space canvas or an object with sprite
                 dragIndicatorUI.transform.position = chainHandle.position;
+            }
+        }
+        
+        UpdateRangeIndicator();
+    }
+
+    private void UpdateRangeIndicator()
+    {
+        if (showRangeIndicatorLine && rangeIndicatorLine != null && chainBaseTransform != null)
+        {
+            rangeIndicatorLine.positionCount = rangeIndicatorSegments;
+            float angle = 0f;
+            Vector3 center = chainBaseTransform.position;
+            center.y = handleYPosition; // ドラッグ操作平面の高さに合わせる
+            
+            for (int i = 0; i < rangeIndicatorSegments; i++)
+            {
+                float x = Mathf.Sin(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
+                float z = Mathf.Cos(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
+                
+                Vector3 pos = center + new Vector3(x, 0, z);
+                rangeIndicatorLine.SetPosition(i, pos);
+                
+                angle += (360f / rangeIndicatorSegments);
+            }
+        }
+        else if (rangeIndicatorLine != null && rangeIndicatorLine.positionCount > 0)
+        {
+            rangeIndicatorLine.positionCount = 0;
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        // エディタ上でも分かりやすいようにGizmoを描画
+        if (chainBaseTransform != null)
+        {
+            Gizmos.color = Color.cyan;
+            Vector3 center = chainBaseTransform.position;
+            center.y = handleYPosition;
+            
+            int segments = 36;
+            float angle = 0f;
+            Vector3 lastPos = center + new Vector3(0, 0, maxDistanceFromBase);
+            for (int i = 1; i <= segments; i++)
+            {
+                angle += 360f / segments;
+                float x = Mathf.Sin(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
+                float z = Mathf.Cos(Mathf.Deg2Rad * angle) * maxDistanceFromBase;
+                Vector3 newPos = center + new Vector3(x, 0, z);
+                Gizmos.DrawLine(lastPos, newPos);
+                lastPos = newPos;
             }
         }
     }
