@@ -171,5 +171,5 @@ MonoBehaviour:
   noCollideLayer:
     serializedVersion: 2
     m_Bits: 32768
-  destructionEffectPrefab: {fileID: 0}
+  destructionEffectPrefab: {fileID: 541386704716935803, guid: 2496353c777824c4e8b2bcd3fbe79d5c, type: 3}
   floatingTextPrefab: {fileID: 8906212933433537235, guid: 1211278fc0286450a9d12b9ec1efb309, type: 3}
