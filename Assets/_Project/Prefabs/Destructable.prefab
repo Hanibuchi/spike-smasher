@@ -173,3 +173,8 @@ MonoBehaviour:
     m_Bits: 32768
   destructionEffectPrefab: {fileID: 541386704716935803, guid: 2496353c777824c4e8b2bcd3fbe79d5c, type: 3}
   floatingTextPrefab: {fileID: 8906212933433537235, guid: 1211278fc0286450a9d12b9ec1efb309, type: 3}
+  scoreBallPrefab: {fileID: 9168943759506211863, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+  scoreBallFlyForceMin: 5
+  scoreBallFlyForceMax: 12
+  scoreBallSaturation: 0.8
+  scoreBallValue: 0.9

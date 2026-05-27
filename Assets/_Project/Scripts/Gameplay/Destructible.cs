@@ -26,6 +26,15 @@ public class Destructible : MonoBehaviour
     public GameObject destructionEffectPrefab;
     public GameObject floatingTextPrefab;
 
+    [Header("Score Ball Settings")]
+    public GameObject scoreBallPrefab;
+    [Tooltip("飛び散るスコアボールへ与える力の最小値")]
+    public float scoreBallFlyForceMin = 5f;
+    [Tooltip("飛び散るスコアボールへ与える力の最大値")]
+    public float scoreBallFlyForceMax = 12f;
+    [Tooltip("生成されるスコアボールの基準色。指定した色の明度(V)と彩度(S)が使用され、色相(H)はランダムになります。")]
+    public Color scoreBallBaseColor = new Color(0.9f, 0.18f, 0.18f);
+
     private void Start()
     {
         if (SpikeBall.Instance != null)
@@ -119,7 +128,56 @@ public class Destructible : MonoBehaviour
 
     public void DestroyObject()
     {
-        GameManager.Instance.AddScore(scoreValue);
+        if (scoreBallPrefab != null)
+        {
+            int scorePerBall = 1;
+            ScoreBall sbPrefab = scoreBallPrefab.GetComponent<ScoreBall>();
+            if (sbPrefab != null)
+            {
+                scorePerBall = Mathf.Max(1, sbPrefab.scoreAmount);
+            }
+
+            int spawnCount = scoreValue / scorePerBall;
+            int remainder = scoreValue % scorePerBall;
+
+            if (remainder > 0)
+            {
+                // 端数のスコアは直接加算しておく
+                GameManager.Instance.AddScore(remainder);
+            }
+
+            for (int i = 0; i < spawnCount; i++)
+            {
+                GameObject ballObj = Instantiate(scoreBallPrefab, transform.position + (Vector3.up * 1.5f), Quaternion.identity);
+                
+                // 飛び散る処理
+                Rigidbody ballRb = ballObj.GetComponent<Rigidbody>();
+                if (ballRb != null)
+                {
+                    Vector3 randomDir = Random.onUnitSphere;
+                    if (randomDir.y <= 0.2f) randomDir.y = Random.Range(0.5f, 1f);
+                    randomDir.Normalize();
+                    
+                    float force = Random.Range(scoreBallFlyForceMin, scoreBallFlyForceMax);
+                    ballRb.AddForce(randomDir * force, ForceMode.Impulse);
+                }
+
+                // 色の変更処理
+                Renderer ballRenderer = ballObj.GetComponentInChildren<Renderer>();
+                if (ballRenderer != null)
+                {
+                    float randomHue = Random.Range(0f, 1f);
+                    Color.RGBToHSV(scoreBallBaseColor, out float _, out float s, out float v);
+                    Color newColor = Color.HSVToRGB(randomHue, s, v);
+                    ballRenderer.material.color = newColor;
+                }
+            }
+        }
+        else
+        {
+            // プレハブが未設定の場合は直接スコアを加算
+            GameManager.Instance.AddScore(scoreValue);
+        }
 
         if (destructionEffectPrefab != null)
         {

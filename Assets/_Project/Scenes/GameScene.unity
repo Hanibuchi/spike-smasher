@@ -8736,6 +8736,7 @@ GameObject:
   - component: {fileID: 1560184192}
   - component: {fileID: 1560184191}
   - component: {fileID: 1560184196}
+  - component: {fileID: 1560184197}
   m_Layer: 0
   m_Name: ChainBase
   m_TagString: Untagged
@@ -8838,6 +8839,20 @@ HingeJoint:
   m_EnablePreprocessing: 1
   m_MassScale: 1
   m_ConnectedMassScale: 1
+--- !u!114 &1560184197
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1560184189}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cf49b6c9810e24fa6824ac2c5e488ecc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ScoreBallCollector
+  attractRadius: 3
+  collectRadius: 1
 --- !u!1001 &1560968060
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11875,6 +11890,63 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 90aaf2a8de6014ba082a5c223cd60742, type: 3}
+--- !u!1001 &4182572888045164274
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 3.24644
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 2.20603
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5139354125556384327, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9168943759506211863, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
+      propertyPath: m_Name
+      value: ScoreBall
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 9ee475ce5f37849a6be12111ec2cc143, type: 3}
 --- !u!1001 &9201297470769713989
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -11971,3 +12043,4 @@ SceneRoots:
   - {fileID: 4008993624432899187}
   - {fileID: 364936457}
   - {fileID: 937830616}
+  - {fileID: 4182572888045164274}
