@@ -67,7 +67,7 @@ public class SpikeBall : MonoBehaviour
 
         if (rb.linearVelocity.magnitude >= minVelocityToDestroy)
         {
-            Destructible target = other.gameObject.GetComponent<Destructible>();
+            Destructible target = other.gameObject.GetComponentInParent<Destructible>();
             if (target != null)
             {
                 if (currentSizeLevel >= target.requiredSizeLevel)
