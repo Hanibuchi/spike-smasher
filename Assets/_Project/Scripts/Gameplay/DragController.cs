@@ -5,14 +5,14 @@ using UnityEngine.InputSystem;
 public class DragController : MonoBehaviour
 {
     public Transform chainHandle;
-    public float handleYPosition = 1.0f;
+    public float handleYPosition = 0.1f;
     
     // UI that prompts user to drag
     public GameObject dragIndicatorUI;
     
     [Header("Base Limits")]
     public Transform chainBaseTransform;
-    public float maxDistanceFromBase = 5.0f;
+    public float maxDistanceFromBase = 3.0f;
     
     [Header("Visuals - Range Indicator")]
     public bool showRangeIndicatorLine = true;

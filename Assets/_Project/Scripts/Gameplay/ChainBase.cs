@@ -7,7 +7,7 @@ public class ChainBase : MonoBehaviour
     public Transform targetHandle;
 
     [Tooltip("移動の速度")]
-    public float moveSpeed = 5f;
+    public float moveSpeed = 10f;
 
     private Rigidbody rb;
     private float constantY;
