@@ -9,6 +9,7 @@ public class SpikeBall : MonoBehaviour
     
     private Rigidbody rb;
     [SerializeField] float currentSizeLevel = 1.0f;
+    [SerializeField] private Transform targetTransform;
     private Vector3 initialScale;
     private float initialMass;
 
@@ -25,7 +26,11 @@ public class SpikeBall : MonoBehaviour
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
-        initialScale = transform.localScale;
+        if (targetTransform == null)
+        {
+            targetTransform = transform;
+        }
+        initialScale = targetTransform.localScale;
         if (rb != null)
         {
             initialMass = rb.mass;
@@ -46,20 +51,23 @@ public class SpikeBall : MonoBehaviour
     {
         currentSizeLevel = 1.0f + (currentScore * sizeGrowthFactor);
         
-        transform.localScale = initialScale * currentSizeLevel;
+        if (targetTransform != null)
+        {
+            targetTransform.localScale = initialScale * currentSizeLevel;
+        }
         if (rb != null)
         {
             rb.mass = initialMass * currentSizeLevel;
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
         if (GameManager.Instance.CurrentState != GameManager.GameState.Playing) return;
 
         if (rb.linearVelocity.magnitude >= minVelocityToDestroy)
         {
-            Destructible target = collision.gameObject.GetComponent<Destructible>();
+            Destructible target = other.gameObject.GetComponent<Destructible>();
             if (target != null)
             {
                 if (currentSizeLevel >= target.requiredSizeLevel)
