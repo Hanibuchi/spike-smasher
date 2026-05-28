@@ -8714,7 +8714,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: cf49b6c9810e24fa6824ac2c5e488ecc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ScoreBallCollector
-  attractRadius: 3
+  attractRadius: 10
   collectRadius: 1
 --- !u!114 &1560184198
 MonoBehaviour:
