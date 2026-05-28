@@ -45,6 +45,11 @@ public class DestructibleSpawner : MonoBehaviour
 
     private float spawnTimer = 0f;
 
+    private void Start()
+    {
+        SpawnUpToMax();
+    }
+
     private void Update()
     {
         spawnTimer += Time.deltaTime;
@@ -53,6 +58,23 @@ public class DestructibleSpawner : MonoBehaviour
         {
             spawnTimer = 0f;
             TrySpawn();
+        }
+    }
+
+    private void SpawnUpToMax()
+    {
+        if (destructiblePrefab == null || SpikeBall.Instance == null) return;
+
+        float currentScaleLevel = SpikeBall.Instance.CurrentSizeLevel;
+        float currentSpawnRadius = SpikeBall.Instance.GetScaledValue(spawnRadiusBase);
+        float currentMinSpawnRadius = SpikeBall.Instance.GetScaledValue(minSpawnRadiusBase);
+
+        int currentCount = GetCurrentDestructibleCount(currentSpawnRadius);
+        int spawnAmount = maxDestructiblesInRadius - currentCount;
+
+        for (int i = 0; i < spawnAmount; i++)
+        {
+            SpawnDestructible(currentScaleLevel, currentMinSpawnRadius, currentSpawnRadius);
         }
     }
 
@@ -65,8 +87,19 @@ public class DestructibleSpawner : MonoBehaviour
         float currentSpawnRadius = SpikeBall.Instance.GetScaledValue(spawnRadiusBase);
         float currentMinSpawnRadius = SpikeBall.Instance.GetScaledValue(minSpawnRadiusBase);
 
+        int currentCount = GetCurrentDestructibleCount(currentSpawnRadius);
+
+        // 最大数に達していない場合のみ生成
+        if (currentCount < maxDestructiblesInRadius)
+        {
+            SpawnDestructible(currentScaleLevel, currentMinSpawnRadius, currentSpawnRadius);
+        }
+    }
+
+    private int GetCurrentDestructibleCount(float radius)
+    {
         // 範囲内のオブジェクトをカウント
-        Collider[] hitColliders = Physics.OverlapSphere(transform.position, currentSpawnRadius, destructibleLayer);
+        Collider[] hitColliders = Physics.OverlapSphere(transform.position, radius, destructibleLayer);
         int currentCount = 0;
         foreach (var hit in hitColliders)
         {
@@ -76,12 +109,7 @@ public class DestructibleSpawner : MonoBehaviour
                 currentCount++;
             }
         }
-
-        // 最大数に達していない場合のみ生成
-        if (currentCount < maxDestructiblesInRadius)
-        {
-            SpawnDestructible(currentScaleLevel, currentMinSpawnRadius, currentSpawnRadius);
-        }
+        return currentCount;
     }
 
     private void SpawnDestructible(float spikeBallScale, float minSpawnRadius, float maxSpawnRadius)
