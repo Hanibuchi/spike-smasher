@@ -23,6 +23,32 @@ public class ChainBase : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         InitializeChainLinks();
+        
+        if (SpikeBall.Instance != null)
+        {
+            SpikeBall.Instance.OnSizeLevelChanged += UpdateChainScale;
+            // 初期状態の反映
+            UpdateChainScale(SpikeBall.Instance.CurrentSizeLevel);
+        }
+    }
+
+    private void OnDestroy()
+    {
+        if (SpikeBall.Instance != null)
+        {
+            SpikeBall.Instance.OnSizeLevelChanged -= UpdateChainScale;
+        }
+    }
+
+    private void UpdateChainScale(float sizeLevel)
+    {
+        foreach (var link in chainLinks)
+        {
+            if (link.linkTransform != null)
+            {
+                link.linkTransform.localScale = link.initialScale * sizeLevel;
+            }
+        }
     }
 
     private void InitializeChainLinks()
@@ -62,19 +88,6 @@ public class ChainBase : MonoBehaviour
 
     private void FixedUpdate()
     {
-        // 鎖の各リンクのスケールをSpikeBallに合わせて更新
-        if (SpikeBall.Instance != null && chainLinks.Count > 0)
-        {
-            float sizeLevel = SpikeBall.Instance.GetScaledValue(1f);
-            foreach (var link in chainLinks)
-            {
-                if (link.linkTransform != null)
-                {
-                    link.linkTransform.localScale = link.initialScale * sizeLevel;
-                }
-            }
-        }
-
         if (targetHandle == null) return;
 
         // Y座標をtargetHandleと同じ高さに固定

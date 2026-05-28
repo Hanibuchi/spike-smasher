@@ -3541,7 +3541,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4bdddc22c404deda7aa5a6f6d56361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  gameDuration: 10
+  gameDuration: 60
   debugScoreToAdd: 1000
 --- !u!4 &1809070047
 Transform:
