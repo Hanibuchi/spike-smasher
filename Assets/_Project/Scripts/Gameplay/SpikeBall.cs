@@ -5,7 +5,7 @@ public class SpikeBall : MonoBehaviour
     public static SpikeBall Instance { get; private set; }
 
     public float minVelocityToDestroy = 1.0f;
-    public float sizeGrowthFactor = 0.001f;
+    public float sizeGrowthFactor = 0.002f;
     
     private Rigidbody rb;
     [SerializeField] float currentSizeLevel = 1.0f;

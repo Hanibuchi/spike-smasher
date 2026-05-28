@@ -4147,7 +4147,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpikeBall
   minVelocityToDestroy: 0
-  sizeGrowthFactor: 0.001
+  sizeGrowthFactor: 0.002
   currentSizeLevel: 1
   targetTransform: {fileID: 558051406}
 --- !u!1001 &9201297470769713989
