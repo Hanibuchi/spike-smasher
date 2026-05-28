@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using unityroom.Api;
 
 public class GameManager : MonoBehaviour
 {
@@ -54,6 +55,8 @@ public class GameManager : MonoBehaviour
                 {
                     SoundManager.Instance.PlaySE(gameEndSE);
                 }
+                
+                UnityroomApiClient.Instance.SendScore(1, currentScore, ScoreboardWriteMode.HighScoreDesc);
                 
                 ChangeState(GameState.Result);
             }
