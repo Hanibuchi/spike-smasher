@@ -3250,10 +3250,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::DestructibleSpawner
   destructiblePrefab: {fileID: 5730230410408729091, guid: 90aaf2a8de6014ba082a5c223cd60742, type: 3}
-  spawnInterval: 0.5
-  spawnRadiusBase: 20
+  spawnInterval: 0.2
+  spawnRadiusBase: 25
   minSpawnRadiusBase: 5
-  maxDestructiblesInRadius: 40
+  maxDestructiblesInRadius: 50
   smallProfile:
     weight: 80
     minScaleMultiplier: 0.5
