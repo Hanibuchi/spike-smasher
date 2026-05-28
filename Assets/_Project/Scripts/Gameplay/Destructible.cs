@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class Destructible : MonoBehaviour
@@ -35,6 +36,12 @@ public class Destructible : MonoBehaviour
     [Tooltip("生成されるスコアボールの基準色。指定した色の明度(V)と彩度(S)が使用され、色相(H)はランダムになります。")]
     public Color scoreBallBaseColor = new Color(0.9f, 0.18f, 0.18f);
 
+    [Header("Lifetime Settings")]
+    [Tooltip("時間経過で自動で消滅するかどうか")]
+    public bool hasLifetime = true;
+    [Tooltip("生成されてから消滅するまでの時間（秒）")]
+    public float lifetimeDuration = 20f;
+
     private void Start()
     {
         if (SpikeBall.Instance != null)
@@ -44,6 +51,36 @@ public class Destructible : MonoBehaviour
 
         // オブジェクトが初めからシーンに配置されている場合の初期化
         Initialize(transform.localScale.x);
+
+        if (hasLifetime)
+        {
+            StartCoroutine(LifetimeRoutine());
+        }
+    }
+
+    private IEnumerator LifetimeRoutine()
+    {
+        // 縮小アニメーションにかける時間
+        float disappearAnimDuration = 0.5f;
+        // アニメーションを開始するまでの待機時間（最低0秒を担保）
+        float waitTime = Mathf.Max(0f, lifetimeDuration - disappearAnimDuration);
+        
+        yield return new WaitForSeconds(waitTime);
+
+        // スケールを徐々に小さくするアニメーション
+        Vector3 initialScale = transform.localScale;
+        float elapsedTime = 0f;
+
+        while (elapsedTime < disappearAnimDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float t = elapsedTime / disappearAnimDuration;
+            transform.localScale = Vector3.Lerp(initialScale, Vector3.zero, t);
+            yield return null;
+        }
+
+        transform.localScale = Vector3.zero;
+        Destroy(transform.root.gameObject);
     }
 
     public void Initialize(float scale)

@@ -178,6 +178,8 @@ MonoBehaviour:
   scoreBallFlyForceMin: 5
   scoreBallFlyForceMax: 12
   scoreBallBaseColor: {r: 1, g: 0.7, b: 0.7, a: 1}
+  hasLifetime: 1
+  lifetimeDuration: 20
 --- !u!95 &365098708178477455
 Animator:
   serializedVersion: 7
