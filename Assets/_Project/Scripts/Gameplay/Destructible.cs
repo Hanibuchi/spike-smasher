@@ -215,6 +215,10 @@ public class Destructible : MonoBehaviour
             {
                 ft.SetText("+" + scoreValue);
             }
+
+            // スコアの値に応じてテキストの大きさを変更（基本スコア10をスケール1.0の基準とする）
+            float textScale = Mathf.Max(0.5f, scoreValue / 10f);
+            floatingText.transform.localScale = Vector3.one * textScale;
         }
 
         Destroy(transform.root.gameObject);
