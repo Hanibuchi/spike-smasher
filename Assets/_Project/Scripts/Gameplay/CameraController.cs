@@ -7,12 +7,12 @@ public class CameraController : MonoBehaviour
     private Vector3 baseFollowOffset;
     public float cameraScaleMultiplier = 0.5f;
     public float followSpeed = 2f; // Used if we need custom follow logic, but cinemachine handles it mostly
-    
+
     private void Start()
     {
         if (vcam == null)
             vcam = GetComponent<CinemachineCamera>();
-            
+
         if (vcam != null)
         {
             var follow = vcam.GetComponent<CinemachineFollow>();
@@ -39,11 +39,11 @@ public class CameraController : MonoBehaviour
     private void UpdateCameraSettings(float sizeLevel)
     {
         if (vcam == null) return;
-        
+
         var follow = vcam.GetComponent<CinemachineFollow>();
         if (follow != null)
         {
-            follow.FollowOffset = baseFollowOffset * sizeLevel * cameraScaleMultiplier;
+            follow.FollowOffset = baseFollowOffset * ((1 - cameraScaleMultiplier) * sizeLevel + cameraScaleMultiplier);
         }
     }
 }

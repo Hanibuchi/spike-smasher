@@ -828,8 +828,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.1759199, y: 0.8204733, z: -0.4247082, w: -0.33985114}
-  m_LocalPosition: {x: 10, y: 20, z: 10}
+  m_LocalRotation: {x: -0.17591989, y: 0.82047325, z: -0.42470816, w: -0.3398512}
+  m_LocalPosition: {x: 8, y: 16, z: 8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1556,9 +1556,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController
   vcam: {fileID: 0}
-  baseOrthographicSize: 10
-  baseDistance: 15
-  growthFactor: 0.002
+  cameraScaleMultiplier: 0.5
   followSpeed: 2
 --- !u!114 &583457969
 MonoBehaviour:
@@ -1607,7 +1605,7 @@ MonoBehaviour:
     AngularDampingMode: 0
     RotationDamping: {x: 1, y: 1, z: 1}
     QuaternionDamping: 1
-  FollowOffset: {x: 10, y: 20, z: 10}
+  FollowOffset: {x: 8, y: 16, z: 8}
 --- !u!114 &583457971
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1659,8 +1657,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 583457967}
   serializedVersion: 2
-  m_LocalRotation: {x: -0.17591992, y: 0.82047325, z: -0.42470822, w: -0.33985117}
-  m_LocalPosition: {x: 10, y: 20, z: 10}
+  m_LocalRotation: {x: -0.17591986, y: 0.82047325, z: -0.4247082, w: -0.33985114}
+  m_LocalPosition: {x: 8, y: 16, z: 8}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2103,7 +2101,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::InfiniteGroundSpawner
   groundPrefab: {fileID: 6520507668254174664, guid: f20981929e67148a5b1436a8c94fc35b, type: 3}
   tileSize: 10
-  baseViewDistanceInTiles: 3
+  baseViewDistanceInTiles: 4
   spawnHeight: 0
   target: {fileID: 1560184190}
 --- !u!4 &1061428711
@@ -3541,6 +3539,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   gameDuration: 60
+  debugScoreToAdd: 1000
 --- !u!4 &1809070047
 Transform:
   m_ObjectHideFlags: 0
