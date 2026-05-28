@@ -1,6 +1,6 @@
 # Spike Smasher (スパイク・スマッシャー)
 
-![サムネ](サムネ.gif)
+![サムネ](thumbnail.gif)
 
 **[🎮 今すぐブラウザでプレイ (unityroom)](https://unityroom.com/games/spike_smasher)**
 
