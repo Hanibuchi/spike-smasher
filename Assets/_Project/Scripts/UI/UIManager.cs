@@ -1,6 +1,7 @@
 using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
+using System.Collections;
 
 public class UIManager : MonoBehaviour
 {
@@ -8,16 +9,23 @@ public class UIManager : MonoBehaviour
     public GameObject titlePanel;
     public GameObject gamePanel;
     public GameObject resultPanel;
+    public CanvasGroup currentPanelGroup;
 
     [Header("Game UI")]
     public TextMeshProUGUI timerText;
     public TextMeshProUGUI scoreText;
+    public Color normalTextColor = Color.black;
+    public Color warningTimerColor = Color.red;
 
     [Header("Result UI")]
     public TextMeshProUGUI resultScoreText;
     public Button startButton;
     public Button restartButton;
     public Button tweetButton;
+
+    private Coroutine scoreAnimationCoroutine;
+    private Coroutine panelTransitionCoroutine;
+    private Vector3 originalScoreScale;
 
     private void Start()
     {
@@ -28,6 +36,11 @@ public class UIManager : MonoBehaviour
         restartButton.onClick.AddListener(() => GameManager.Instance.RestartGame());
         tweetButton.onClick.AddListener(TweetResult);
         
+        if (scoreText != null)
+        {
+            originalScoreScale = scoreText.transform.localScale;
+        }
+
         HandleGameStateChanged(GameManager.Instance.CurrentState);
         UpdateScoreUI(0);
     }
@@ -45,25 +58,117 @@ public class UIManager : MonoBehaviour
     {
         if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
         {
-            timerText.text = Mathf.CeilToInt(GameManager.Instance.timeRemaining).ToString();
+            float timeRemain = GameManager.Instance.timeRemaining;
+            timerText.text = Mathf.CeilToInt(timeRemain).ToString();
+
+            // 残り時間が少ない場合の演出 (赤く点滅)
+            if (timeRemain <= 10f)
+            {
+                timerText.color = Color.Lerp(normalTextColor, warningTimerColor, Mathf.PingPong(Time.time * 4f, 1f));
+                timerText.transform.localScale = Vector3.one * (1f + 0.1f * Mathf.Sin(Time.time * 20f));
+            }
+            else
+            {
+                timerText.color = normalTextColor;
+                timerText.transform.localScale = Vector3.one;
+            }
         }
     }
 
     private void HandleGameStateChanged(GameManager.GameState state)
     {
+        if (panelTransitionCoroutine != null) StopCoroutine(panelTransitionCoroutine);
+
         titlePanel.SetActive(state == GameManager.GameState.Title);
         gamePanel.SetActive(state == GameManager.GameState.Playing);
         resultPanel.SetActive(state == GameManager.GameState.Result);
 
+        // アクティブなパネルを少しアニメーションさせる
+        GameObject activePanel = null;
+        if (state == GameManager.GameState.Title) activePanel = titlePanel;
+        if (state == GameManager.GameState.Playing) activePanel = gamePanel;
+        if (state == GameManager.GameState.Result) activePanel = resultPanel;
+
+        if (activePanel != null)
+        {
+            panelTransitionCoroutine = StartCoroutine(AnimatePanelIn(activePanel.transform));
+        }
+
         if (state == GameManager.GameState.Result)
         {
-            resultScoreText.text = "Score: " + GameManager.Instance.currentScore;
+            resultScoreText.text = "スコア: " + GameManager.Instance.currentScore;
+            StartCoroutine(AnimateScoreCountUp(resultScoreText, GameManager.Instance.currentScore));
         }
+    }
+
+    private IEnumerator AnimatePanelIn(Transform panelTransform)
+    {
+        float duration = 0.3f;
+        float elapsed = 0f;
+        Vector3 initialScale = Vector3.one * 0.8f;
+        panelTransform.localScale = initialScale;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            float t = elapsed / duration;
+            // イーズアウトのアニメーション
+            t = 1f - (1f - t) * (1f - t);
+            panelTransform.localScale = Vector3.Lerp(initialScale, Vector3.one, t);
+            yield return null;
+        }
+        panelTransform.localScale = Vector3.one;
     }
 
     private void UpdateScoreUI(int score)
     {
-        scoreText.text = "Score: " + score;
+        scoreText.text = "スコア: " + score;
+        if (gameObject.activeInHierarchy)
+        {
+            if (scoreAnimationCoroutine != null) StopCoroutine(scoreAnimationCoroutine);
+            scoreAnimationCoroutine = StartCoroutine(AnimateScorePop());
+        }
+    }
+
+    private IEnumerator AnimateScorePop()
+    {
+        float duration = 0.15f;
+        float elapsed = 0f;
+        Vector3 targetScale = originalScoreScale * 1.5f;
+
+        // スケールアップ
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            scoreText.transform.localScale = Vector3.Lerp(originalScoreScale, targetScale, elapsed / duration);
+            scoreText.color = Color.Lerp(Color.yellow, normalTextColor, elapsed / duration);
+            yield return null;
+        }
+
+        // スケールダウン
+        elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            scoreText.transform.localScale = Vector3.Lerp(targetScale, originalScoreScale, elapsed / duration);
+            yield return null;
+        }
+        
+        scoreText.transform.localScale = originalScoreScale;
+    }
+
+    private IEnumerator AnimateScoreCountUp(TextMeshProUGUI tmpText, int targetScore)
+    {
+        float duration = 1.0f;
+        float elapsed = 0f;
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            int current = Mathf.RoundToInt(Mathf.Lerp(0, targetScore, elapsed / duration));
+            tmpText.text = "スコア: " + current;
+            yield return null;
+        }
+        tmpText.text = "スコア: " + targetScore;
     }
 
     private void TweetResult()
