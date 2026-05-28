@@ -12,6 +12,9 @@ public class DestructibleSpawner : MonoBehaviour
     [Tooltip("生成を行う基本半径（SpikeBallのScaleの値が掛けられます）")]
     public float spawnRadiusBase = 20f;
     
+    [Tooltip("生成を行わない最小基本半径（プレイヤー周辺の安全圏。この値もSpikeBallのScaleの値が掛けられます）")]
+    public float minSpawnRadiusBase = 5f;
+    
     [Tooltip("一定範囲内に存在できる生成済みDestructibleオブジェクトの最大数")]
     public int maxDestructiblesInRadius = 40;
     
@@ -60,6 +63,7 @@ public class DestructibleSpawner : MonoBehaviour
         float currentScaleLevel = SpikeBall.Instance.CurrentSizeLevel;
         // SpikeBallのスケールに応じて半径を変更
         float currentSpawnRadius = SpikeBall.Instance.GetScaledValue(spawnRadiusBase);
+        float currentMinSpawnRadius = SpikeBall.Instance.GetScaledValue(minSpawnRadiusBase);
 
         // 範囲内のオブジェクトをカウント
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, currentSpawnRadius, destructibleLayer);
@@ -76,14 +80,16 @@ public class DestructibleSpawner : MonoBehaviour
         // 最大数に達していない場合のみ生成
         if (currentCount < maxDestructiblesInRadius)
         {
-            SpawnDestructible(currentScaleLevel, currentSpawnRadius);
+            SpawnDestructible(currentScaleLevel, currentMinSpawnRadius, currentSpawnRadius);
         }
     }
 
-    private void SpawnDestructible(float spikeBallScale, float spawnRadius)
+    private void SpawnDestructible(float spikeBallScale, float minSpawnRadius, float maxSpawnRadius)
     {
-        // ランダムな位置を計算（今回はXZ平面上を想定。必要に応じて球状（insideUnitSphere）に変更してください）
-        Vector2 randomCircle = Random.insideUnitCircle * spawnRadius;
+        // ドーナツ状の範囲内にランダムな位置を計算（均等に分布するように平方根を使用）
+        float r = Mathf.Sqrt(Random.Range(minSpawnRadius * minSpawnRadius, maxSpawnRadius * maxSpawnRadius));
+        float angle = Random.Range(0f, Mathf.PI * 2);
+        Vector2 randomCircle = new Vector2(Mathf.Cos(angle) * r, Mathf.Sin(angle) * r);
         Vector3 spawnPos = transform.position + new Vector3(randomCircle.x, 0, randomCircle.y);
         
         GameObject obj = Instantiate(destructiblePrefab, spawnPos, Quaternion.identity);
@@ -120,15 +126,19 @@ public class DestructibleSpawner : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        // インスペクタ（エディタ）で選択された際に、スポーン範囲を水色のワイヤーフレームで可視化します
-        Gizmos.color = Color.cyan;
-        
+        // インスペクタ（エディタ）で選択された際に、スポーン範囲を可視化します
         float currentRadius = spawnRadiusBase;
+        float currentMinRadius = minSpawnRadiusBase;
         if (Application.isPlaying && SpikeBall.Instance != null)
         {
             currentRadius = SpikeBall.Instance.GetScaledValue(spawnRadiusBase);
+            currentMinRadius = SpikeBall.Instance.GetScaledValue(minSpawnRadiusBase);
         }
         
+        Gizmos.color = Color.cyan;
         Gizmos.DrawWireSphere(transform.position, currentRadius);
+        
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, currentMinRadius);
     }
 }
