@@ -73,4 +73,16 @@ public class GameManager : MonoBehaviour
         CurrentState = newState;
         OnStateChanged?.Invoke(newState);
     }
+
+    [Header("Debug")]
+    [SerializeField] private int debugScoreToAdd = 100;
+
+    [ContextMenu("Debug Add Score")]
+    private void DebugAddScore()
+    {
+        if (Application.isPlaying)
+        {
+            AddScore(debugScoreToAdd);
+        }
+    }
 }
