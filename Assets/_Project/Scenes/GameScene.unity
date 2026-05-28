@@ -3989,7 +3989,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4a4bdddc22c404deda7aa5a6f6d56361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
-  gameDuration: 10
+  gameDuration: 120
   bgmClip: {fileID: 8300000, guid: f1177a6cfd575bd44bfe5987fb2362fc, type: 3}
   gameStartSE: {fileID: 8300000, guid: 6e3b5639a73d64d1daf0e0282d56a9b8, type: 3}
   gameEndSE: {fileID: 8300000, guid: 21e10cc7e46354b289396d1c01acd68d, type: 3}

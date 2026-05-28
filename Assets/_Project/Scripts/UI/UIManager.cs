@@ -219,7 +219,7 @@ public class UIManager : MonoBehaviour
     private void TweetResult()
     {
         int score = GameManager.Instance.currentScore;
-        string text = $"スパイク スマッシャー で {score} 点を獲得した！ #スパイクスマッシャー";
+        string text = $"スパイク スマッシャー で {score} 点を獲得した！ #スパイクスマッシャー\nhttps://unityroom.com/games/spike_smasher";
         string url = "https://twitter.com/intent/tweet?text=" + UnityEngine.Networking.UnityWebRequest.EscapeURL(text);
         Application.OpenURL(url);
     }
