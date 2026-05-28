@@ -8732,8 +8732,18 @@ MonoBehaviour:
   spawnInterval: 0.5
   spawnRadiusBase: 20
   maxDestructiblesInRadius: 40
-  minScaleMultiplier: 0.5
-  maxScaleMultiplier: 1.2
+  smallProfile:
+    weight: 80
+    minScaleMultiplier: 0.5
+    maxScaleMultiplier: 1
+  mediumProfile:
+    weight: 16
+    minScaleMultiplier: 1.2
+    maxScaleMultiplier: 2
+  largeProfile:
+    weight: 4
+    minScaleMultiplier: 3
+    maxScaleMultiplier: 5
   destructibleLayer:
     serializedVersion: 2
     m_Bits: 49152

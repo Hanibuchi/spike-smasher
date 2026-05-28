@@ -15,12 +15,26 @@ public class DestructibleSpawner : MonoBehaviour
     [Tooltip("一定範囲内に存在できる生成済みDestructibleオブジェクトの最大数")]
     public int maxDestructiblesInRadius = 40;
     
-    [Header("Scale Settings")]
-    [Tooltip("SpikeBallの大きさに応じた、生成されるオブジェクトの最小サイズの倍率")]
-    public float minScaleMultiplier = 0.5f;
+    [System.Serializable]
+    public class SpawnProfile
+    {
+        [Tooltip("これが選ばれる確率の重み（例: 80と20なら、およそ8:2の割合）")]
+        public float weight;
+        [Tooltip("このサイズの最小の倍率")]
+        public float minScaleMultiplier;
+        [Tooltip("このサイズの最大の倍率")]
+        public float maxScaleMultiplier;
+    }
+
+    [Header("Spawn Profiles")]
+    [Tooltip("よくスポーンする小さめのオブジェクトの設定")]
+    public SpawnProfile smallProfile = new SpawnProfile { weight = 80f, minScaleMultiplier = 0.8f, maxScaleMultiplier = 1.0f };
     
-    [Tooltip("SpikeBallの大きさに応じた、生成されるオブジェクトの最大サイズの倍率")]
-    public float maxScaleMultiplier = 1.2f;
+    [Tooltip("そこそこスポーンする中くらいのオブジェクトの設定")]
+    public SpawnProfile mediumProfile = new SpawnProfile { weight = 16f, minScaleMultiplier = 1.5f, maxScaleMultiplier = 2.0f };
+
+    [Tooltip("たまにしかスポーンしない大きなオブジェクトの設定")]
+    public SpawnProfile largeProfile = new SpawnProfile { weight = 4f, minScaleMultiplier = 3f, maxScaleMultiplier = 5f };
 
     [Header("Collision Settings")]
     [Tooltip("生成数をカウントするためのレイヤー（Destructibleオブジェクトが持つレイヤーを指定してください）")]
@@ -77,9 +91,27 @@ public class DestructibleSpawner : MonoBehaviour
 
         if (destructible != null)
         {
-            // SpikeBallのスケールを基準に最小・最大サイズを算出し、その間でランダム化
-            float minVal = spikeBallScale * minScaleMultiplier;
-            float maxVal = spikeBallScale * maxScaleMultiplier;
+            // 確率の重み（Weight）からどのサイズを使用するか決定
+            float totalWeight = smallProfile.weight + mediumProfile.weight + largeProfile.weight;
+            float randomWeight = Random.Range(0f, totalWeight);
+            
+            SpawnProfile selectedProfile;
+            if (randomWeight <= smallProfile.weight)
+            {
+                selectedProfile = smallProfile;
+            }
+            else if (randomWeight <= smallProfile.weight + mediumProfile.weight)
+            {
+                selectedProfile = mediumProfile;
+            }
+            else
+            {
+                selectedProfile = largeProfile;
+            }
+
+            // 選択されたプロファイルの倍率から実際のスケール幅を算出
+            float minVal = spikeBallScale * selectedProfile.minScaleMultiplier;
+            float maxVal = spikeBallScale * selectedProfile.maxScaleMultiplier;
             float randomScale = Random.Range(minVal, maxVal);
 
             destructible.Initialize(randomScale);
