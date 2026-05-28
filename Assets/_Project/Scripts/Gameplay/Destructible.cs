@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Destructible : MonoBehaviour
@@ -27,12 +28,21 @@ public class Destructible : MonoBehaviour
     public GameObject destructionEffectPrefab;
     public GameObject floatingTextPrefab;
 
+    [System.Serializable]
+    public class ScoreBallSetting
+    {
+        public GameObject prefab;
+        [Tooltip("飛び散るスコアボールへ与える力の最小値")]
+        public float flyForceMin = 5f;
+        [Tooltip("飛び散るスコアボールへ与える力の最大値")]
+        public float flyForceMax = 12f;
+    }
+
     [Header("Score Ball Settings")]
-    public GameObject scoreBallPrefab;
-    [Tooltip("飛び散るスコアボールへ与える力の最小値")]
-    public float scoreBallFlyForceMin = 5f;
-    [Tooltip("飛び散るスコアボールへ与える力の最大値")]
-    public float scoreBallFlyForceMax = 12f;
+    public ScoreBallSetting smallScoreBall = new ScoreBallSetting { flyForceMin = 5f, flyForceMax = 12f };
+    public ScoreBallSetting mediumScoreBall = new ScoreBallSetting { flyForceMin = 10f, flyForceMax = 20f };
+    public ScoreBallSetting largeScoreBall = new ScoreBallSetting { flyForceMin = 20f, flyForceMax = 40f };
+
     [Tooltip("生成されるスコアボールの基準色。指定した色の明度(V)と彩度(S)が使用され、色相(H)はランダムになります。")]
     public Color scoreBallBaseColor = new Color(0.9f, 0.18f, 0.18f);
 
@@ -165,27 +175,30 @@ public class Destructible : MonoBehaviour
 
     public void DestroyObject()
     {
-        if (scoreBallPrefab != null)
+        int remainingScore = scoreValue;
+        
+        List<ScoreBallSetting> settings = new List<ScoreBallSetting>();
+        if (largeScoreBall != null && largeScoreBall.prefab != null) settings.Add(largeScoreBall);
+        if (mediumScoreBall != null && mediumScoreBall.prefab != null) settings.Add(mediumScoreBall);
+        if (smallScoreBall != null && smallScoreBall.prefab != null) settings.Add(smallScoreBall);
+
+        // スコアが大きい順にソート（大きいボールから優先して生成するため）
+        settings.Sort((a, b) => 
         {
-            int scorePerBall = 1;
-            ScoreBall sbPrefab = scoreBallPrefab.GetComponent<ScoreBall>();
-            if (sbPrefab != null)
-            {
-                scorePerBall = Mathf.Max(1, sbPrefab.scoreAmount);
-            }
+            int scoreA = Mathf.Max(1, a.prefab.GetComponent<ScoreBall>()?.scoreAmount ?? 1);
+            int scoreB = Mathf.Max(1, b.prefab.GetComponent<ScoreBall>()?.scoreAmount ?? 1);
+            return scoreB.CompareTo(scoreA); // 降順
+        });
 
-            int spawnCount = scoreValue / scorePerBall;
-            int remainder = scoreValue % scorePerBall;
-
-            if (remainder > 0)
-            {
-                // 端数のスコアは直接加算しておく
-                GameManager.Instance.AddScore(remainder);
-            }
+        foreach (var setting in settings)
+        {
+            int scoreAmount = Mathf.Max(1, setting.prefab.GetComponent<ScoreBall>()?.scoreAmount ?? 1);
+            int spawnCount = remainingScore / scoreAmount;
+            remainingScore %= scoreAmount;
 
             for (int i = 0; i < spawnCount; i++)
             {
-                GameObject ballObj = Instantiate(scoreBallPrefab, transform.position + (Vector3.up * 1.5f), Quaternion.identity);
+                GameObject ballObj = Instantiate(setting.prefab, transform.position + (Vector3.up * 1.5f), Quaternion.identity);
                 
                 // 飛び散る処理
                 Rigidbody ballRb = ballObj.GetComponent<Rigidbody>();
@@ -195,7 +208,7 @@ public class Destructible : MonoBehaviour
                     if (randomDir.y <= 0.2f) randomDir.y = Random.Range(0.5f, 1f);
                     randomDir.Normalize();
                     
-                    float force = Random.Range(scoreBallFlyForceMin, scoreBallFlyForceMax);
+                    float force = Random.Range(setting.flyForceMin, setting.flyForceMax);
                     ballRb.AddForce(randomDir * force, ForceMode.Impulse);
                 }
 
@@ -210,10 +223,11 @@ public class Destructible : MonoBehaviour
                 }
             }
         }
-        else
+
+        if (remainingScore > 0 || settings.Count == 0)
         {
-            // プレハブが未設定の場合は直接スコアを加算
-            GameManager.Instance.AddScore(scoreValue);
+            // 端数のスコア、またはプレハブが未設定の場合は直接加算
+            GameManager.Instance.AddScore(settings.Count == 0 ? scoreValue : remainingScore);
         }
 
         if (destructionEffectPrefab != null)
