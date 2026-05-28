@@ -12,6 +12,11 @@ public class GameManager : MonoBehaviour
     public float timeRemaining { get; private set; }
     public int currentScore { get; private set; }
 
+    [Header("Sounds")]
+    [SerializeField] private AudioClip bgmClip;
+    [SerializeField] private AudioClip gameStartSE;
+    [SerializeField] private AudioClip gameEndSE;
+
     public event Action<GameState> OnStateChanged;
     public event Action<int> OnScoreChanged;
 
@@ -29,6 +34,10 @@ public class GameManager : MonoBehaviour
 
     private void Start()
     {
+        if (SoundManager.Instance != null && bgmClip != null)
+        {
+            SoundManager.Instance.PlayBGM(bgmClip);
+        }
         ChangeState(GameState.Title);
     }
 
@@ -40,6 +49,12 @@ public class GameManager : MonoBehaviour
             if (timeRemaining <= 0)
             {
                 timeRemaining = 0;
+                
+                if (SoundManager.Instance != null && gameEndSE != null)
+                {
+                    SoundManager.Instance.PlaySE(gameEndSE);
+                }
+                
                 ChangeState(GameState.Result);
             }
         }
@@ -52,6 +67,12 @@ public class GameManager : MonoBehaviour
             timeRemaining = gameDuration;
             currentScore = 0;
             OnScoreChanged?.Invoke(currentScore);
+            
+            if (SoundManager.Instance != null && gameStartSE != null)
+            {
+                SoundManager.Instance.PlaySE(gameStartSE);
+            }
+            
             ChangeState(GameState.Playing);
         }
     }

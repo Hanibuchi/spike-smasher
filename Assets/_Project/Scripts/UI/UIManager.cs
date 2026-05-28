@@ -23,9 +23,15 @@ public class UIManager : MonoBehaviour
     public Button restartButton;
     public Button tweetButton;
 
+    [Header("Sounds")]
+    public AudioClip countDownSE;
+    public AudioClip scoreCountUpSE;
+    public AudioClip resultShowSE;
+
     private Coroutine scoreAnimationCoroutine;
     private Coroutine panelTransitionCoroutine;
     private Vector3 originalScoreScale;
+    private int lastCountdownSecond = -1;
 
     private void Start()
     {
@@ -59,18 +65,30 @@ public class UIManager : MonoBehaviour
         if (GameManager.Instance.CurrentState == GameManager.GameState.Playing)
         {
             float timeRemain = GameManager.Instance.timeRemaining;
-            timerText.text = Mathf.CeilToInt(timeRemain).ToString();
+            int currentSecond = Mathf.CeilToInt(timeRemain);
+            timerText.text = currentSecond.ToString();
 
             // 残り時間が少ない場合の演出 (赤く点滅)
-            if (timeRemain <= 10f)
+            if (timeRemain <= 10f && timeRemain > 0f)
             {
                 timerText.color = Color.Lerp(normalTextColor, warningTimerColor, Mathf.PingPong(Time.time * 4f, 1f));
                 timerText.transform.localScale = Vector3.one * (1f + 0.1f * Mathf.Sin(Time.time * 20f));
+
+                // 1秒ごとにカウントダウンSEを鳴らす
+                if (currentSecond != lastCountdownSecond)
+                {
+                    lastCountdownSecond = currentSecond;
+                    if (SoundManager.Instance != null && countDownSE != null)
+                    {
+                        SoundManager.Instance.PlaySE(countDownSE);
+                    }
+                }
             }
             else
             {
                 timerText.color = normalTextColor;
                 timerText.transform.localScale = Vector3.one;
+                lastCountdownSecond = -1; // リセット
             }
         }
     }
@@ -161,14 +179,41 @@ public class UIManager : MonoBehaviour
     {
         float duration = 1.0f;
         float elapsed = 0f;
+        int lastCurrent = -1;
+        float lastSETime = 0f;
+
         while (elapsed < duration)
         {
             elapsed += Time.deltaTime;
             int current = Mathf.RoundToInt(Mathf.Lerp(0, targetScore, elapsed / duration));
-            tmpText.text = "スコア: " + current;
+            
+            if (current != lastCurrent)
+            {
+                lastCurrent = current;
+                tmpText.text = "スコア: " + current;
+                
+                // 音が重なりすぎてチャンネルが枯渇し、最後の再生音が消えるのを防ぐため再生間隔を制限
+                if (SoundManager.Instance != null && scoreCountUpSE != null)
+                {
+                    if (Time.unscaledTime - lastSETime > 0.05f)
+                    {
+                        SoundManager.Instance.PlaySE(scoreCountUpSE);
+                        lastSETime = Time.unscaledTime;
+                    }
+                }
+            }
             yield return null;
         }
         tmpText.text = "スコア: " + targetScore;
+        
+        // カウントアップ音と被らないように少しだけ待機
+        yield return new WaitForSeconds(0.1f);
+        
+        // 結果発表時の音
+        if (SoundManager.Instance != null && resultShowSE != null)
+        {
+            SoundManager.Instance.PlaySE(resultShowSE);
+        }
     }
 
     private void TweetResult()

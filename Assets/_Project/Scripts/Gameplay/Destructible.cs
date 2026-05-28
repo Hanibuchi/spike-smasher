@@ -25,8 +25,11 @@ public class Destructible : MonoBehaviour
     [Tooltip("インスペクタのプルダウンから「1つだけ」チェックを入れてください")]
     public LayerMask noCollideLayer;
 
+    [Header("Effects & Sounds")]
     public GameObject destructionEffectPrefab;
     public GameObject floatingTextPrefab;
+    [Tooltip("破壊時に再生されるSE（複数設定するとランダムで再生）")]
+    public AudioClip[] destroySEs;
 
     [System.Serializable]
     public class ScoreBallSetting
@@ -175,6 +178,11 @@ public class Destructible : MonoBehaviour
 
     public void DestroyObject()
     {
+        if (SoundManager.Instance != null && destroySEs != null && destroySEs.Length > 0)
+        {
+            SoundManager.Instance.PlayRandomSE(destroySEs);
+        }
+
         int remainingScore = scoreValue;
         
         List<ScoreBallSetting> settings = new List<ScoreBallSetting>();

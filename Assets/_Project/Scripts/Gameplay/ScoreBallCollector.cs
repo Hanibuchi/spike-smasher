@@ -8,6 +8,10 @@ public class ScoreBallCollector : MonoBehaviour
     [Tooltip("スコアボールを取得してスコアを加算する半径")]
     public float collectRadius = 1f;
 
+    [Header("Sounds")]
+    [Tooltip("スコアボール回収時に再生されるSE（複数設定するとランダムで再生）")]
+    public AudioClip[] collectSEs;
+
     private void Update()
     {
         // スコア（ボールのサイズレベル）に応じて半径を拡張
@@ -31,6 +35,12 @@ public class ScoreBallCollector : MonoBehaviour
                     {
                         GameManager.Instance.AddScore(sb.GetScore());
                     }
+                    
+                    if (SoundManager.Instance != null && collectSEs != null && collectSEs.Length > 0)
+                    {
+                        SoundManager.Instance.PlayRandomSE(collectSEs);
+                    }
+
                     Destroy(sb.gameObject);
                 }
             }

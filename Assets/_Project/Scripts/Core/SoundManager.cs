@@ -56,4 +56,15 @@ public class SoundManager : MonoBehaviour
         // PlayOneShotを使うことで、複数のSEが重なっても再生される
         seSource.PlayOneShot(clip);
     }
+
+    /// <summary>
+    /// 複数のSEからランダムに1つ選んで再生します。
+    /// </summary>
+    /// <param name="clips">再生するSEの配列</param>
+    public void PlayRandomSE(AudioClip[] clips)
+    {
+        if (clips == null || clips.Length == 0) return;
+        AudioClip clip = clips[UnityEngine.Random.Range(0, clips.Length)];
+        PlaySE(clip);
+    }
 }
